@@ -27,15 +27,21 @@
                     <th>Platform</th>
                     <th>Rating</th>
                     <th>Edit</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
 
             <tbody>
+
                 @foreach($games as $game)
+
                     <tr>
                         <td>{{ $game->id }}</td>
+
                         <td>{{ $game->game_name }}</td>
+
                         <td>{{ $game->platform }}</td>
+
                         <td>{{ $game->rating }}/10</td>
 
                         <td>
@@ -43,8 +49,23 @@
                                 Edit
                             </a>
                         </td>
+
+                        <td>
+                            <form action="/games/destroy/{{ $game->id }}" method="post">
+                                @csrf
+
+                                <button
+                                    onclick="return confirm('Weet je het zeker?')"
+                                    class="btn btn-danger btn-sm"
+                                    type="submit">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
                     </tr>
+
                 @endforeach
+
             </tbody>
         </table>
 
