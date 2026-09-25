@@ -7,9 +7,6 @@ use App\Models\Game;
 
 class GameController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $games = Game::all();
@@ -17,49 +14,67 @@ class GameController extends Controller
         return view('games.index', compact('games'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('games.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'game_name' => 'required',
+            'platform' => 'required',
+            'genre' => 'required',
+            'rating' => 'required|numeric|min:0|max:10'
+        ]);
+
+        $game = new Game([
+            'game_name' => $request->get('game_name'),
+            'platform' => $request->get('platform'),
+            'genre' => $request->get('genre'),
+            'rating' => $request->get('rating')
+        ]);
+
+        $game->save();
+
+        return redirect('/games')->with('success', 'Game added!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $game = Game::find($id);
+
+        return view('games.edit', [
+            'game' => $game
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'game_name' => 'required',
+            'platform' => 'required',
+            'genre' => 'required',
+            'rating' => 'required|numeric|min:0|max:10'
+        ]);
+
+        $game = Game::find($id);
+
+        $game->game_name = $request->get('game_name');
+        $game->platform = $request->get('platform');
+        $game->genre = $request->get('genre');
+        $game->rating = $request->get('rating');
+
+        $game->save();
+
+        return redirect('/games');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //
