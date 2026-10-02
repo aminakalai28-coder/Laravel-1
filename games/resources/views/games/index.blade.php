@@ -1,85 +1,63 @@
 @extends('base')
 
-@section('title', '🎮 Game Collection')
-
 @section('content')
 
-<div class="container" style="margin:40px;">
+<h1>Games</h1>
 
-    <h1 class="display-4">🎮 Game Collection</h1>
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 
-    <a href="/games/create" class="btn btn-success mb-3">
-        🎮 Add Game
-    </a>
+<a href="/games/create" class="btn btn-primary mb-3">Add Game</a>
 
-    <table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th>ID</th>
-                <th>Game</th>
-                <th>Platform</th>
-                <th>Rating</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Game name</th>
+            <th>Platform</th>
+            <th>Genre</th>
+            <th>Rating</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
 
-        <tbody>
+    <tbody>
 
-            @php( $sum = 0 )
-
-            @foreach($games as $game)
-
-                @php( $sum += $game->rating )
-
-                <tr>
-                    <td>{{ $game->id }}</td>
-
-                    <td>{{ $game->game_name }}</td>
-
-                    <td>{{ $game->platform }}</td>
-
-                    <td>{{ $game->rating }}/10</td>
-
-                    <td>
-                        <a href="/games/edit/{{ $game->id }}" class="btn btn-primary btn-sm">
-                            Edit
-                        </a>
-                    </td>
-
-                    <td>
-                        <form action="/games/destroy/{{ $game->id }}" method="post">
-                            @csrf
-
-                            <button
-                                onclick="return confirm('Weet je het zeker?')"
-                                class="btn btn-danger btn-sm"
-                                type="submit">
-                                Delete
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-
-            @endforeach
+        @foreach($games as $game)
 
             <tr>
-                <td colspan="4">
-                    <strong>Gemiddelde rating:</strong>
-                </td>
+                <td>{{ $game->game_name }}</td>
+                <td>{{ $game->platform }}</td>
+                <td>{{ $game->genre }}</td>
+                <td>{{ $game->rating }}</td>
 
                 <td>
-                    <strong>
-                        {{ count($games) > 0 ? number_format($sum / count($games), 1) : 0 }}/10
-                    </strong>
-                </td>
+                    <a href="/games/show/{{ $game->id }}" class="btn btn-info btn-sm">
+                        Show
+                    </a>
 
-                <td></td>
+                    <a href="/games/edit/{{ $game->id }}" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <form action="/games/destroy/{{ $game->id }}" method="post" style="display:inline;">
+                        @csrf
+
+                        <button
+                            onclick="return confirm('Weet je het zeker?')"
+                            class="btn btn-danger btn-sm"
+                            type="submit">
+                            Delete
+                        </button>
+                    </form>
+                </td>
             </tr>
 
-        </tbody>
-    </table>
+        @endforeach
 
-</div>
+    </tbody>
+</table>
 
 @endsection
