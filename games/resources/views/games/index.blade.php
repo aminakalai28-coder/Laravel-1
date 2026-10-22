@@ -1,3 +1,4 @@
+
 @extends('base')
 
 @section('content')
@@ -10,7 +11,11 @@
     </div>
 @endif
 
-<a href="/games/create" class="btn btn-primary mb-3">Add Game</a>
+@role('admin')
+    <a href="{{ route('games.create') }}" class="btn btn-primary mb-3">
+        Add Game
+    </a>
+@endrole
 
 <table class="table">
     <thead>
@@ -24,9 +29,7 @@
     </thead>
 
     <tbody>
-
         @foreach($games as $game)
-
             <tr>
                 <td>{{ $game->game_name }}</td>
                 <td>{{ $game->platform }}</td>
@@ -34,29 +37,38 @@
                 <td>{{ $game->rating }}</td>
 
                 <td>
-                    <a href="/games/show/{{ $game->id }}" class="btn btn-info btn-sm">
-                        Show
-                    </a>
+                    @auth
+                        @can('product bekijken')
+                            <a href="{{ route('games.show', $game->id) }}"
+                               class="btn btn-info btn-sm">
+                                Show
+                            </a>
+                        @endcan
+                    @endauth
 
-                    <a href="/games/edit/{{ $game->id }}" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
+                    @role('admin')
+                        <a href="{{ route('games.edit', $game->id) }}"
+                           class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
 
-                    <form action="/games/destroy/{{ $game->id }}" method="post" style="display:inline;">
-                        @csrf
+                        <form action="{{ route('games.destroy', $game->id) }}"
+                              method="POST"
+                              style="display: inline;">
+                            @csrf
+                            @method('DELETE')
 
-                        <button
-                            onclick="return confirm('Weet je het zeker?')"
-                            class="btn btn-danger btn-sm"
-                            type="submit">
-                            Delete
-                        </button>
-                    </form>
+                            <button
+                                onclick="return confirm('Weet je het zeker?')"
+                                class="btn btn-danger btn-sm"
+                                type="submit">
+                                Delete
+                            </button>
+                        </form>
+                    @endrole
                 </td>
             </tr>
-
         @endforeach
-
     </tbody>
 </table>
 

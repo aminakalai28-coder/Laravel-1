@@ -9,25 +9,31 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Iedereen mag het overzicht van games bekijken
-Route::get('/games', [GameController::class, 'index'])->name('games.index');
+// Klanten en admins mogen het overzicht bekijken
+Route::get('/games', [GameController::class, 'index'])
+    ->middleware(['auth', 'role:admin|klant'])
+    ->name('games.index');
 
-// Alleen ingelogde gebruikers mogen games beheren
-Route::middleware('auth')->group(function () {
+// Alleen admins mogen games beheren
+Route::middleware(['auth', 'role:admin'])->group(function () {
 
-    // Game toevoegen
-    Route::get('/games/create', [GameController::class, 'create'])->name('games.create');
-    Route::post('/games', [GameController::class, 'store'])->name('games.store');
+    Route::get('/games/create', [GameController::class, 'create'])
+        ->name('games.create');
 
-    // Game bekijken
-    Route::get('/games/{game}', [GameController::class, 'show'])->name('games.show');
+    Route::post('/games', [GameController::class, 'store'])
+        ->name('games.store');
 
-    // Game bewerken
-    Route::get('/games/{game}/edit', [GameController::class, 'edit'])->name('games.edit');
-    Route::put('/games/{game}', [GameController::class, 'update'])->name('games.update');
+    Route::get('/games/{game}', [GameController::class, 'show'])
+        ->name('games.show');
 
-    // Game verwijderen
-    Route::delete('/games/{game}', [GameController::class, 'destroy'])->name('games.destroy');
+    Route::get('/games/{game}/edit', [GameController::class, 'edit'])
+        ->name('games.edit');
+
+    Route::put('/games/{game}', [GameController::class, 'update'])
+        ->name('games.update');
+
+    Route::delete('/games/{game}', [GameController::class, 'destroy'])
+        ->name('games.destroy');
 });
 
 // Dashboard
@@ -37,9 +43,14 @@ Route::get('/dashboard', function () {
 
 // Profiel
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });
 
 // Geheime pagina
