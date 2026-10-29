@@ -3,20 +3,23 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Klanten en admins mogen het overzicht bekijken
+// Games bekijken voor klanten en admins
 Route::get('/games', [GameController::class, 'index'])
     ->middleware(['auth', 'role:admin|klant'])
     ->name('games.index');
 
-// Alleen admins mogen games beheren
+// Games beheren door admins
 Route::middleware(['auth', 'role:admin'])->group(function () {
-
     Route::get('/games/create', [GameController::class, 'create'])
         ->name('games.create');
 
@@ -35,6 +38,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/games/{game}', [GameController::class, 'destroy'])
         ->name('games.destroy');
 });
+
+// Beheeromgeving: alleen admins
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('permissions', PermissionController::class)
+            ->except(['show']);
+
+        Route::resource('roles', RoleController::class)
+            ->except(['show']);
+
+        Route::resource('role-permissions', RolePermissionController::class)
+            ->except(['show', 'edit', 'update']);
+
+        Route::resource('user-roles', UserRoleController::class)
+            ->except(['show', 'edit', 'update']);
+    });
 
 // Dashboard
 Route::get('/dashboard', function () {
